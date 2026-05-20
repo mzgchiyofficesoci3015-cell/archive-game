@@ -411,6 +411,26 @@ input.inp.err{border-color:#cc2020;animation:glitch .22s 3;}
 .maptile:hover:not(.lk){border-color:#7a6030;}
 .maptile.lk{cursor:default;opacity:.38;}
 .maptile.cur{border-color:#c9a040;}
+/* ── Tablet / small desktop ── */
+@media screen and (max-width:900px) and (min-height:521px){
+  .ltab-main{font-size:10px;}
+  .ltab-sub{font-size:6.5px;}
+  .ph{font-size:7.5px;}
+  .btn{font-size:9.5px;}
+}
+/* ── Portrait Mobile ── */
+@media screen and (orientation:portrait) and (max-width:600px){
+  .ltab{padding:.25rem .35rem;gap:4px;}
+  .ltab-main{font-size:8.5px;}
+  .ltab-sub{font-size:5.5px;}
+  .ltab-icon{width:12px;}
+  .ph{font-size:7px;margin-bottom:.14rem;padding-bottom:.14rem;}
+  .btn{padding:.2rem .55rem;font-size:9px;letter-spacing:.8px;}
+  .btn.sm{padding:.12rem .3rem;font-size:7.5px;}
+  .clue-i{font-size:7px;padding:.15rem .28rem;}
+  .cat-e{padding:.22rem .35rem;}
+  input.inp{font-size:9px;padding:.18rem .35rem;}
+}
 /* ── Mobile Landscape ── */
 @media screen and (max-height:520px){
   .pnl{border-width:1px;}
@@ -477,11 +497,19 @@ function ArchiveGame(){
   const[hintPanel,setHintPanel]=useState(false);
   const[saved,setSaved]=useState(false);
   const[showFile,setShowFile]=useState(false);
+  const[mobPanel,setMobPanel]=useState(null); // null|'main'|'clues'
+
 
   const clueCount=clues.length;
   const allSolved=Object.values(solved).every(Boolean);
-  // モバイル横向き対応
-  const mobile=typeof window!=="undefined"&&window.innerHeight<520;
+  // レスポンシブ対応
+  const VW=typeof window!=="undefined"?window.innerWidth:1024;
+  const VH=typeof window!=="undefined"?window.innerHeight:600;
+  const mobile=VH<520;
+  const portrait=VW<VH; // portrait mode detection
+  // スケールファクター: デスクトップ=1.0, 小画面は縮小
+  const vscale=Math.min(VW/1000,VH/580,1);
+  const vf=v=>Math.max(Math.round(v*Math.max(vscale,0.72)),6); // font scaler
   const CARD_H =mobile? 88:165;
   const DEC_H  =mobile? 84:150;
   const PNL_BOT=mobile?102:210;
@@ -1229,15 +1257,15 @@ function ArchiveGame(){
             )}
             {/* セリフウィンドウ — 中央下 (VNスタイル) */}
             {showLib&&(
-              <div style={{position:"absolute",bottom:18,left:"50%",transform:"translateX(-50%)",width:"58%",minWidth:320,zIndex:10,animation:"fadeUp .25s ease both"}}>
+              <div style={{position:"absolute",bottom:mobile?8:18,left:mobile?"50%":"4%",transform:mobile?"translateX(-50%)":"none",width:mobile?"92%":"52%",maxWidth:480,zIndex:10,animation:"fadeUp .25s ease both"}}>
                 {/* セリフ枠 */}
-                <div style={{background:"rgba(8,6,3,.94)",border:"1px solid #5a4828",boxShadow:"0 -4px 32px rgba(0,0,0,.75),inset 0 0 20px rgba(10,6,2,.4)",padding:"1rem 1.3rem 0.8rem"}}>
+                <div style={{background:"rgba(8,6,3,.94)",border:"1px solid #5a4828",boxShadow:"0 -4px 32px rgba(0,0,0,.75),inset 0 0 20px rgba(10,6,2,.4)",padding:mobile?".6rem .9rem .5rem":"1rem 1.3rem 0.8rem"}}>
                   {/* 話者名 */}
                   <div style={{display:"flex",alignItems:"center",gap:".45rem",marginBottom:".52rem",borderBottom:"1px solid rgba(90,72,28,.35)",paddingBottom:".38rem"}}>
                     <span style={{fontSize:7,letterSpacing:3.5,color:C.goldDim,fontFamily:"'Courier New',monospace",textTransform:"uppercase"}}>— 司書 / LIBRARIAN —</span>
                   </div>
                   {/* セリフ本文 */}
-                  <div style={{fontSize:12.5,color:C.muted,fontStyle:"italic",fontFamily:"Georgia,'Times New Roman',serif",lineHeight:2.1,whiteSpace:"pre-line",letterSpacing:.3,minHeight:56}}>
+                  <div style={{fontSize:mobile?10:12.5,color:C.muted,fontStyle:"italic",fontFamily:"Georgia,'Times New Roman',serif",lineHeight:mobile?1.8:2.1,whiteSpace:"pre-line",letterSpacing:.3,minHeight:mobile?42:56}}>
                     {libText}{libTyping&&<span style={{animation:"blink 0.7s infinite"}}>▌</span>}
                   </div>
                   {!libTyping&&libChoices&&(
@@ -1397,7 +1425,13 @@ function ArchiveGame(){
         <div style={{flex:1,position:"relative",overflow:"hidden"}}>
 
           {/* Main panel (top-left, changes with tab) */}
-          {tab!=="decipher"&&(
+          {tab!=="decipher"&&(mobile?(
+            /* モバイル: ボタンタップでポップアップ */
+            <button onClick={()=>setMobPanel('main')} style={{position:"absolute",top:6,left:6,zIndex:5,background:"rgba(16,12,7,.92)",border:"1px solid #4a3a22",color:"#c9a040",fontSize:9,padding:".28rem .55rem",letterSpacing:1,fontFamily:"inherit",cursor:"pointer",display:"flex",alignItems:"center",gap:5}}>
+              <span style={{fontSize:10}}>📋</span>
+              <span>{PANEL_HDRS[tab]}</span>
+            </button>
+          ):(
             <div className="pnl" style={{position:"absolute",top:6,left:6,width:"48%",bottom:PNL_BOT,zIndex:5,display:"flex",flexDirection:"column",overflow:"hidden"}}>
               <div style={{padding:".34rem .52rem",borderBottom:`1px solid #231b0d`,flexShrink:0,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <span className="ph" style={{margin:0,paddingBottom:0,border:0,fontSize:7.5}}>{PANEL_HDRS[tab]}</span>
@@ -1405,22 +1439,60 @@ function ArchiveGame(){
               </div>
               {(PANELS[tab]||renderCatalog)()}
             </div>
-          )}
+          ))}
 
           {/* Clues panel (top-right) */}
-          <div className="pnl" style={{position:"absolute",top:6,right:6,width:"calc(44% - 12px)",bottom:CLU_BOT,zIndex:5,display:"flex",flexDirection:"column",overflow:"hidden"}}>
-            <div style={{padding:".34rem .52rem",borderBottom:`1px solid #231b0d`,flexShrink:0,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-              <span className="ph" style={{margin:0,paddingBottom:0,border:0,fontSize:7.5}}>{t.cluesTitle}</span>
-              <span style={{fontSize:7,color:allSolved?C.amber:C.dim,fontFamily:"'Courier New',monospace"}}>{clueCount}/6</span>
+          {mobile?(
+            /* モバイル: ボタンタップでポップアップ */
+            <button onClick={()=>setMobPanel('clues')} style={{position:"absolute",top:6,right:6,zIndex:5,background:"rgba(16,12,7,.92)",border:"1px solid #4a3a22",color:"#c9a040",fontSize:9,padding:".28rem .55rem",letterSpacing:1,fontFamily:"inherit",cursor:"pointer",display:"flex",alignItems:"center",gap:5}}>
+              <span style={{fontSize:10}}>🔍</span>
+              <span>{t.cluesTitle}</span>
+              <span style={{fontSize:7,color:allSolved?"#c9a040":"#5a4e36",fontFamily:"'Courier New',monospace",marginLeft:2}}>{clueCount}/6</span>
+            </button>
+          ):(
+            <div className="pnl" style={{position:"absolute",top:6,right:6,width:"calc(44% - 12px)",bottom:CLU_BOT,zIndex:5,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+              <div style={{padding:".34rem .52rem",borderBottom:`1px solid #231b0d`,flexShrink:0,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <span className="ph" style={{margin:0,paddingBottom:0,border:0,fontSize:7.5}}>{t.cluesTitle}</span>
+                <span style={{fontSize:7,color:allSolved?C.amber:C.dim,fontFamily:"'Courier New',monospace"}}>{clueCount}/6</span>
+              </div>
+              <div className="sc" style={{flex:1,padding:".32rem .4rem"}}>
+                {clues.length===0
+                  ?<div style={{fontSize:9,color:C.faint,fontStyle:"italic",lineHeight:2,whiteSpace:"pre-line"}}>{t.noClues}</div>
+                  :clues.map((c,i)=><div key={i} className="clue-i">{c}</div>)
+                }
+              </div>
             </div>
-            <div className="sc" style={{flex:1,padding:".32rem .4rem"}}>
-              {clues.length===0
-                ?<div style={{fontSize:9,color:C.faint,fontStyle:"italic",lineHeight:2,whiteSpace:"pre-line"}}>{t.noClues}</div>
-                :clues.map((c,i)=><div key={i} className="clue-i">{c}</div>)
-              }
-            </div>
+          )}
 
-          </div>
+          {/* ── モバイル パネルモーダル ── */}
+          {mobile&&mobPanel&&(
+            <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.82)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center"}}
+              onClick={()=>setMobPanel(null)}>
+              <div style={{background:"rgba(10,7,3,.97)",border:"1px solid #4a3a22",width:"92vw",height:"78vh",maxWidth:480,display:"flex",flexDirection:"column",overflow:"hidden",boxShadow:"0 0 48px rgba(0,0,0,.9)"}}
+                onClick={e=>e.stopPropagation()}>
+                {/* モーダルヘッダー */}
+                <div style={{padding:".42rem .6rem",borderBottom:"1px solid #231b0d",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
+                  <span style={{fontSize:8,color:"#7a6030",letterSpacing:2,fontFamily:"'Courier New',monospace",textTransform:"uppercase"}}>
+                    {mobPanel==='main'?PANEL_HDRS[tab]:t.cluesTitle}
+                    {mobPanel==='clues'&&<span style={{marginLeft:8,color:allSolved?"#c9a040":"#5a4e36"}}>{clueCount}/6</span>}
+                  </span>
+                  <button onClick={()=>setMobPanel(null)} style={{background:"transparent",border:"none",color:"#7a6030",fontSize:14,cursor:"pointer",lineHeight:1,padding:"0 .2rem"}}>✕</button>
+                </div>
+                {/* モーダルコンテンツ */}
+                <div className="sc" style={{flex:1,overflow:"auto"}}>
+                  {mobPanel==='main'&&(tab==="catalog"?renderCatalog():PANELS[tab]?PANELS[tab]():<div style={{padding:"1rem",color:"#5a4e36",fontSize:9}}>—</div>)}
+                  {mobPanel==='clues'&&(
+                    <div style={{padding:".4rem"}}>
+                      {clues.length===0
+                        ?<div style={{fontSize:9,color:"#3a3020",fontStyle:"italic",lineHeight:2,padding:".4rem"}}>{t.noClues}</div>
+                        :clues.map((cl,i)=><div key={i} className="clue-i">{cl}</div>)
+                      }
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* allSolved誘導バナー — libCounter以外の時だけ表示 */}
         {allSolved&&loc!=="libCounter"&&(
