@@ -2,9 +2,9 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>The Archive of Forgetting</title>
-<style>*{box-sizing:border-box;margin:0;padding:0;}html,body{width:100%;height:100%;background:#060402;overflow:hidden;}#root{width:100%;height:100%;}</style>
+<style>*{box-sizing:border-box;margin:0;padding:0;}html,body{width:100%;height:100%;background:#060402;overflow:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;}#root{width:100%;height:100%;}</style>
 </head>
 <body>
 <div id="root"></div>
@@ -367,7 +367,7 @@ const CSS=`
 .cat-e:hover{background:rgba(80,65,20,.18);}
 .cat-e.sel{background:rgba(90,72,18,.28);border-left:2px solid #c9a040;}
 /* Memo fragments */
-.memo-f{border:1px solid #231b0d;padding:.5rem;margin-bottom:.35rem;cursor:pointer;font-size:9.5px;line-height:1.8;color:#927c58;transition:all .18s;background:rgba(10,8,4,.5);}
+.memo-f{border:1px solid #231b0d;padding:.5rem;margin-bottom:.35rem;cursor:pointer;font-size:9.5px;line-height:1.8;color:#927c58;transition:all .18s;background:rgba(10,8,4,.5);touch-action:manipulation;-webkit-text-size-adjust:100%;}
 .memo-f:hover{border-color:#3a2e18;color:#d8ccaa;}
 .memo-f.pick{border-color:#7a6030;color:#5a4e36;opacity:.52;}
 /* Clue items */
@@ -726,7 +726,7 @@ function ArchiveGame(){
         <div style={{position:"relative",zIndex:5,display:"flex",flexDirection:"column",height:"100%"}}>
           <div style={{fontSize:7.5,letterSpacing:2.5,color:C.goldDim,marginBottom:"1.8rem",fontFamily:"'Courier New',monospace",textTransform:"uppercase"}}>{iIdx+1}/{t.intro.length} — {t.entryLog}</div>
           <div style={{flex:1,display:"flex",alignItems:"center"}}>
-            <div style={{maxWidth:showLibChar?"58%":"80%",lineHeight:2.05,fontSize:13,color:C.text,whiteSpace:"pre-line",minHeight:90}}>
+            <div style={{maxWidth:showLibChar?"58%":"80%",lineHeight:mobile?1.85:2.05,fontSize:mobile?10:13,color:C.text,whiteSpace:"pre-line",minHeight:mobile?60:90}}>
               {iText}{!iDone&&<span style={{animation:"blink .7s infinite",color:C.gold}}>▎</span>}
             </div>
           </div>
@@ -1314,7 +1314,7 @@ function ArchiveGame(){
             <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(2,1,0,.7) 0%,rgba(6,4,1,.4) 50%,rgba(2,1,0,.8) 100%)",pointerEvents:"none",zIndex:1}}/>
             <div style={{position:"absolute",bottom:60,left:"50%",transform:"translateX(-50%)",zIndex:10,textAlign:"center",width:"72%",animation:"fadeIn .6s ease both"}}>
               <div style={{fontSize:8,letterSpacing:3,color:C.goldDim,fontFamily:"'Courier New',monospace",marginBottom:".8rem"}}>— 閉館後通路 / AFTER-HOURS HALLWAY —</div>
-              <div style={{background:"rgba(6,4,1,.92)",border:`1px solid ${C.border}`,padding:".9rem 1.1rem",marginBottom:".7rem",fontFamily:"Georgia,serif",fontSize:11,color:C.muted,lineHeight:2,fontStyle:"italic",textAlign:"left"}}>
+              <div style={{background:"rgba(6,4,1,.92)",border:`1px solid ${C.border}`,padding:mobile?".5rem .7rem":".9rem 1.1rem",marginBottom:mobile?".4rem":".7rem",fontFamily:"Georgia,serif",fontSize:mobile?9.5:11,color:C.muted,lineHeight:mobile?1.75:2,fontStyle:"italic",textAlign:"left"}}>
                 {sceneText}{sceneTyping&&<span style={{animation:"blink 0.7s infinite",color:"inherit"}}>▌</span>}
               </div>
               {!hallFind?(
@@ -1338,7 +1338,7 @@ function ArchiveGame(){
             <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(4,0,0,.8) 0%,rgba(8,2,2,.5) 50%,rgba(4,0,0,.85) 100%)",pointerEvents:"none",zIndex:1}}/>
             <div style={{position:"absolute",bottom:60,left:"50%",transform:"translateX(-50%)",zIndex:10,textAlign:"center",width:"72%",animation:"fadeIn .6s ease both"}}>
               <div style={{fontSize:8,letterSpacing:3,color:"#cc4040",fontFamily:"'Courier New',monospace",marginBottom:".8rem"}}>— 禁書閲覧室 / FORBIDDEN ARCHIVE —</div>
-              <div style={{background:"rgba(8,2,2,.94)",border:`1px solid #5a2020`,padding:".9rem 1.1rem",marginBottom:".7rem",fontFamily:"Georgia,serif",fontSize:11,color:"#aa7878",lineHeight:2,fontStyle:"italic",textAlign:"left"}}>
+              <div style={{background:"rgba(8,2,2,.94)",border:`1px solid #5a2020`,padding:mobile?".5rem .7rem":".9rem 1.1rem",marginBottom:mobile?".4rem":".7rem",fontFamily:"Georgia,serif",fontSize:mobile?9.5:11,color:"#aa7878",lineHeight:mobile?1.75:2,fontStyle:"italic",textAlign:"left"}}>
                 {sceneText}{sceneTyping&&<span style={{animation:"blink 0.7s infinite",color:"inherit"}}>▌</span>}
               </div>
               {!forbEntry?(
@@ -1367,7 +1367,7 @@ function ArchiveGame(){
             <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(1,2,4,.85) 0%,rgba(2,4,8,.5) 50%,rgba(1,2,4,.9) 100%)",pointerEvents:"none",zIndex:1}}/>
             <div style={{position:"absolute",bottom:40,left:"50%",transform:"translateX(-50%)",zIndex:10,textAlign:"center",width:"75%",animation:"fadeIn .6s ease both"}}>
               <div style={{fontSize:8,letterSpacing:3,color:"#607898",fontFamily:"'Courier New',monospace",marginBottom:".8rem"}}>— 地下書庫 / UNDERGROUND ARCHIVE —</div>
-              <div style={{background:"rgba(2,4,8,.94)",border:`1px solid #2a3a5a`,padding:".9rem 1.1rem",marginBottom:".7rem",fontFamily:"Georgia,serif",fontSize:11,color:"#7898b8",lineHeight:2,fontStyle:"italic",textAlign:"left"}}>
+              <div style={{background:"rgba(2,4,8,.94)",border:`1px solid #2a3a5a`,padding:mobile?".5rem .7rem":".9rem 1.1rem",marginBottom:mobile?".4rem":".7rem",fontFamily:"Georgia,serif",fontSize:mobile?9.5:11,color:"#7898b8",lineHeight:mobile?1.75:2,fontStyle:"italic",textAlign:"left"}}>
                 {sceneText}{sceneTyping&&<span style={{animation:"blink 0.7s infinite",color:"inherit"}}>▌</span>}
               </div>
               {!ugndOk?(
@@ -1529,13 +1529,13 @@ function ArchiveGame(){
             {/* 端の破れ・染み */}
             <div style={{position:"absolute",top:0,left:0,right:0,height:4,background:"linear-gradient(180deg,rgba(30,15,2,.45),transparent)",pointerEvents:"none"}}/>
             <div style={{position:"absolute",bottom:0,left:0,right:0,height:5,background:"linear-gradient(0deg,rgba(25,12,2,.5),transparent)",pointerEvents:"none"}}/>
-            <div style={{padding:".42rem .5rem",position:"relative"}}>
-              <div style={{fontSize:6,letterSpacing:3.5,color:"#a08040",fontFamily:"'Courier New',monospace",marginBottom:".32rem",borderBottom:"1px solid rgba(140,100,40,.3)",paddingBottom:".18rem",opacity:.85}}>{t.invLabel}</div>
-              <div style={{fontFamily:"Georgia,serif",lineHeight:2.05,color:"#c8a868"}}>
-                <div style={{fontSize:9}}>{t.invName} <span style={{display:"inline-block",borderBottom:"1px solid rgba(160,120,50,.4)",width:52,marginLeft:2,verticalAlign:"bottom"}}></span></div>
-                <div style={{fontSize:9}}>{t.invId}<span style={{fontStyle:"italic",marginLeft:4,letterSpacing:.5,color:"#b09050"}}>STL-8842-INV</span></div>
-                <div style={{fontSize:9}}>Visit No.: <span style={{fontWeight:"bold",color:"#e04030",fontSize:11}}>027</span></div>
-                <div style={{fontSize:9}}>{t.invAff} <span style={{fontStyle:"italic",color:"#907040"}}>{t.invAffV}</span></div>
+            <div style={{padding:mobile?".28rem .38rem":".42rem .5rem",position:"relative",overflow:"hidden",height:"100%",boxSizing:"border-box"}}>
+              <div style={{fontSize:mobile?5.5:6,letterSpacing:3,color:"#a08040",fontFamily:"'Courier New',monospace",marginBottom:mobile?".18rem":".32rem",borderBottom:"1px solid rgba(140,100,40,.3)",paddingBottom:mobile?".1rem":".18rem",opacity:.85}}>{t.invLabel}</div>
+              <div style={{fontFamily:"Georgia,serif",lineHeight:mobile?1.7:2.05,color:"#c8a868"}}>
+                <div style={{fontSize:mobile?8:9}}>{t.invName} <span style={{display:"inline-block",borderBottom:"1px solid rgba(160,120,50,.4)",width:mobile?36:52,marginLeft:2,verticalAlign:"bottom"}}></span></div>
+                <div style={{fontSize:mobile?8:9}}>{t.invId}<span style={{fontStyle:"italic",marginLeft:4,letterSpacing:.5,color:"#b09050"}}>STL-8842-INV</span></div>
+                <div style={{fontSize:mobile?8:9}}>Visit No.: <span style={{fontWeight:"bold",color:"#e04030",fontSize:mobile?9.5:11}}>027</span></div>
+                <div style={{fontSize:mobile?8:9}}>{t.invAff} <span style={{fontStyle:"italic",color:"#907040"}}>{t.invAffV}</span></div>
               </div>
               {/* スタンプ印 */}
               <div style={{position:"absolute",bottom:5,right:6,width:38,height:38,border:"2.5px solid rgba(180,60,20,.55)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",transform:"rotate(-18deg)"}}>
@@ -1564,18 +1564,18 @@ function ArchiveGame(){
             {/* 端の焦げ */}
             <div style={{position:"absolute",top:0,left:0,right:0,height:4,background:"linear-gradient(180deg,rgba(20,10,1,.5),transparent)",pointerEvents:"none"}}/>
             <div style={{position:"absolute",bottom:0,left:0,right:0,height:5,background:"linear-gradient(0deg,rgba(15,7,0,.55),transparent)",pointerEvents:"none"}}/>
-            <div style={{padding:".46rem .52rem",position:"relative"}}>
-              <div style={{fontSize:6,letterSpacing:2.5,color:"rgba(140,105,40,.6)",fontFamily:"Georgia,serif",fontStyle:"italic",marginBottom:".3rem",borderBottom:"1px solid rgba(100,75,25,.2)",paddingBottom:".15rem"}}>— {t.libNoteLabel} —</div>
-              <div style={{fontFamily:"'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif",fontSize:11.5,fontStyle:"italic",lineHeight:2.15,color:"#b89858",whiteSpace:"pre-line",letterSpacing:.6,
-                textShadow:"0 0 8px rgba(180,140,60,.12),0.4px 0.4px 0 rgba(0,0,0,.4)",fontWeight:"normal"}}>
+            <div style={{padding:mobile?".28rem .38rem":".46rem .52rem",position:"relative",overflow:"hidden",height:"100%",boxSizing:"border-box"}}>
+              <div style={{fontSize:mobile?5.5:6,letterSpacing:2,color:"rgba(140,105,40,.6)",fontFamily:"Georgia,serif",fontStyle:"italic",marginBottom:mobile?".15rem":".3rem",borderBottom:"1px solid rgba(100,75,25,.2)",paddingBottom:mobile?".1rem":".15rem"}}>— {t.libNoteLabel} —</div>
+              <div style={{fontFamily:"'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif",fontSize:mobile?9:11.5,fontStyle:"italic",lineHeight:mobile?1.75:2.15,color:"#b89858",whiteSpace:"pre-line",letterSpacing:.4,
+                textShadow:"0 0 8px rgba(180,140,60,.12),0.4px 0.4px 0 rgba(0,0,0,.4)",fontWeight:"normal",overflow:"hidden"}}>
                 {t.libNoteText}
               </div>
-              <div style={{marginTop:".28rem",textAlign:"right",fontSize:10,fontFamily:"'Palatino Linotype',Palatino,Georgia,serif",fontStyle:"italic",color:"rgba(150,110,45,.7)",letterSpacing:1.5,textShadow:"0 0 6px rgba(160,120,40,.2)"}}>— L</div>
+              <div style={{marginTop:mobile?".1rem":".28rem",textAlign:"right",fontSize:mobile?8:10,fontFamily:"'Palatino Linotype',Palatino,Georgia,serif",fontStyle:"italic",color:"rgba(150,110,45,.7)",letterSpacing:1.5}}>— L</div>
             </div>
           </div>
 
           {/* Card 3: Decipher Panel */}
-          <div className="pnl" style={{position:"absolute",bottom:4,right:4,width:"calc(35% - 12px)",height:DEC_H,zIndex:5,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+          <div className="pnl" style={{position:"absolute",bottom:mobile?6:4,right:4,width:"calc(35% - 12px)",height:DEC_H,zIndex:5,display:"flex",flexDirection:"column",overflow:"hidden"}}>
             <div style={{padding:".34rem .48rem",borderBottom:`1px solid #231b0d`,flexShrink:0}}>
               <span className="ph" style={{margin:0,paddingBottom:0,border:0,fontSize:7.5}}>{t.decTitle}</span>
             </div>
@@ -1655,7 +1655,7 @@ function ArchiveGame(){
       </div>
 
       {/* ── BOTTOM NAV (matching Image 4) ── */}
-      <div style={{background:C.footer,borderTop:`1px solid ${C.border}`,height:mobile?38:46,display:"flex",alignItems:"stretch",flexShrink:0,zIndex:10}}>
+      <div style={{background:C.footer,borderTop:`1px solid ${C.border}`,height:mobile?38:46,paddingBottom:"env(safe-area-inset-bottom,0px)",display:"flex",alignItems:"stretch",flexShrink:0,zIndex:10}}>
         {t.nav.map(item=>(
           <div key={item.id}
             className={`bnv${bnav===item.id?" on":""}${item.center?" center":""}` }
