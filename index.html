@@ -849,15 +849,22 @@ function ArchiveGame(){
           <div style={{padding:".28rem .52rem",fontSize:8,color:C.dim,fontFamily:"'Courier New',monospace"}}>{t.srchRes}</div>
         </div>
       ):(
-        <div style={{flex:1,display:"flex",flexDirection:"column",padding:".4rem .52rem",gap:".26rem"}}>
-          <div style={{fontSize:9,color:selCat.sc,fontFamily:"'Courier New',monospace"}}>{selCat.status}</div>
-          <div style={{fontSize:11,color:C.text,lineHeight:1.5}}>{lang==="ja"?selCat.jp:selCat.en}</div>
-          <div style={{height:1,background:"#231b0d"}}/>
-          <div className="sc" style={{flex:1}}>
+        <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+          {/* 上部の戻るボタン — 常に表示 */}
+          <div style={{padding:".3rem .52rem",borderBottom:`1px solid #231b0d`,flexShrink:0,display:"flex",alignItems:"center",gap:".4rem"}}>
+            <button className="btn sm" onClick={()=>setSelCat(null)} style={{fontSize:8,padding:".18rem .42rem",display:"flex",alignItems:"center",gap:4}}>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="7,1 3,5 7,9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              {lang==="ja"?"一覧に戻る":"Back to list"}
+            </button>
+            <span style={{fontSize:7.5,color:selCat.sc,fontFamily:"'Courier New',monospace",marginLeft:"auto"}}>{selCat.status}</span>
+          </div>
+          {/* 詳細内容 — スクロール可能 */}
+          <div className="sc" style={{flex:1,padding:".4rem .52rem",display:"flex",flexDirection:"column",gap:".26rem"}}>
+            <div style={{fontSize:11,color:C.text,lineHeight:1.5}}>{lang==="ja"?selCat.jp:selCat.en}</div>
+            <div style={{height:1,background:"#231b0d"}}/>
             {selCat.detail.map((d,i)=><div key={i} style={{fontSize:9,color:selCat.special&&i===2?C.amber:C.muted,lineHeight:1.75,marginBottom:".14rem"}}>{d}</div>)}
             {selCat.special&&<div style={{marginTop:".3rem",border:`1px solid ${C.redT}`,padding:".24rem .32rem",fontSize:8,color:C.redT,fontFamily:"'Courier New',monospace",animation:"glitch 4s infinite"}}>{t.warnActive}</div>}
           </div>
-          <button className="btn sm" onClick={()=>setSelCat(null)}>{t.closeBtn}</button>
         </div>
       )}
     </div>
@@ -1435,7 +1442,7 @@ function ArchiveGame(){
             <div className="pnl" style={{position:"absolute",top:6,left:6,width:"48%",bottom:PNL_BOT,zIndex:5,display:"flex",flexDirection:"column",overflow:"hidden"}}>
               <div style={{padding:".34rem .52rem",borderBottom:`1px solid #231b0d`,flexShrink:0,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <span className="ph" style={{margin:0,paddingBottom:0,border:0,fontSize:7.5}}>{PANEL_HDRS[tab]}</span>
-                {tab==="catalog"&&selCat&&<button className="btn sm" style={{fontSize:7.5}} onClick={()=>setSelCat(null)}>← {t.closeBtn}</button>}
+                {/* 戻るボタンは renderCatalog 内の上部に移動済み */}
               </div>
               {(PANELS[tab]||renderCatalog)()}
             </div>
