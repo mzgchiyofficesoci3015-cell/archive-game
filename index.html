@@ -2,26 +2,9 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#0a0800">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Archive">
-<link rel="manifest" href="./manifest.json">
-<link rel="apple-touch-icon" href="./icon-192.png">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>The Archive of Forgetting</title>
-<style>*{box-sizing:border-box;margin:0;padding:0;}html,body{width:100%;height:100%;background:#060402;overflow:hidden;}#root{width:100%;height:100%;}
-/* ── Mobile Landscape ── */
-body { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-* { -webkit-overflow-scrolling: touch; }
-@media screen and (max-height: 480px) {
-  /* カード高さを縮小 */
-}
-@media screen and (max-device-width: 932px) and (orientation: landscape) {
-  html, body { height: 100%; width: 100%; }
-}
-</style>
+<style>*{box-sizing:border-box;margin:0;padding:0;}html,body{width:100%;height:100%;background:#060402;overflow:hidden;}#root{width:100%;height:100%;}</style>
 </head>
 <body>
 <div id="root"></div>
@@ -428,6 +411,22 @@ input.inp.err{border-color:#cc2020;animation:glitch .22s 3;}
 .maptile:hover:not(.lk){border-color:#7a6030;}
 .maptile.lk{cursor:default;opacity:.38;}
 .maptile.cur{border-color:#c9a040;}
+/* ── Mobile Landscape ── */
+@media screen and (max-height:520px){
+  .pnl{border-width:1px;}
+  .ph{font-size:7px;margin-bottom:.18rem;padding-bottom:.18rem;}
+  .ltab{padding:.3rem .45rem;gap:5px;}
+  .ltab-main{font-size:9px;}
+  .ltab-sub{font-size:6px;}
+  .ltab-icon{width:14px;}
+  .btn{padding:.22rem .6rem;font-size:9px;letter-spacing:1px;}
+  .btn.sm{padding:.14rem .36rem;font-size:8px;}
+  .bnv{gap:2px;padding:.16rem 0;}
+  .clue-i{padding:.18rem .3rem;font-size:7.5px;}
+  .cat-e{padding:.28rem .4rem;}
+  .memo-f{padding:.32rem;font-size:8px;margin-bottom:.22rem;}
+  input.inp{font-size:10px;padding:.2rem .4rem;}
+}
 `;
 
 /* ══════════════════════════════════
@@ -481,6 +480,14 @@ function ArchiveGame(){
 
   const clueCount=clues.length;
   const allSolved=Object.values(solved).every(Boolean);
+  // モバイル横向き対応
+  const mobile=typeof window!=="undefined"&&window.innerHeight<520;
+  const CARD_H =mobile? 88:165;
+  const DEC_H  =mobile? 84:150;
+  const PNL_BOT=mobile?102:210;
+  const CLU_BOT=mobile? 98:190;
+  const SB_L   =mobile?100:132;
+  const SB_R   =mobile?118:160;
   const addClue=useCallback((c)=>setClues(p=>p.includes(c)?p:[...p,c]),[]);
   const bgUrl=LOCS.find(l=>l.id===loc)?.bg()||BG_READ;
 
@@ -1167,7 +1174,7 @@ function ArchiveGame(){
       )}
 
       {/* ── HEADER ── */}
-      <div style={{background:C.header,borderBottom:`1px solid ${C.border}`,padding:".36rem .7rem",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,zIndex:10}}>
+      <div style={{background:C.header,borderBottom:`1px solid ${C.border}`,padding:mobile?".18rem .5rem":".36rem .7rem",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,zIndex:10}}>
         <div style={{display:"flex",alignItems:"center",gap:".6rem"}}>
           <div style={{width:36,height:36,border:`1.5px solid ${C.goldDim}`,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",color:C.goldDim,fontSize:18,animation:"flicker 6s infinite",flexShrink:0}}>⊕</div>
           <div>
@@ -1364,7 +1371,7 @@ function ArchiveGame(){
           <>
 
         {/* ── LEFT SIDEBAR ── */}
-        <div style={{width:132,background:C.sidebar,borderRight:`1px solid ${C.border}`,flexShrink:0,display:"flex",flexDirection:"column",paddingTop:".22rem",zIndex:6}}>
+        <div style={{width:SB_L,background:C.sidebar,borderRight:`1px solid ${C.border}`,flexShrink:0,display:"flex",flexDirection:"column",paddingTop:".22rem",zIndex:6}}>
           {t.sidebarTabs.map(tp=>(
             <div key={tp.id} className={`ltab${tab===tp.id?" on":""}`} onClick={()=>{sfx.play('click');sfx.play('flip');setTab(tp.id);}}>
               <span className="ltab-icon">{Icons[tp.icon]||tp.icon}</span>
@@ -1391,7 +1398,7 @@ function ArchiveGame(){
 
           {/* Main panel (top-left, changes with tab) */}
           {tab!=="decipher"&&(
-            <div className="pnl" style={{position:"absolute",top:6,left:6,width:"48%",bottom:210,zIndex:5,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+            <div className="pnl" style={{position:"absolute",top:6,left:6,width:"48%",bottom:PNL_BOT,zIndex:5,display:"flex",flexDirection:"column",overflow:"hidden"}}>
               <div style={{padding:".34rem .52rem",borderBottom:`1px solid #231b0d`,flexShrink:0,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <span className="ph" style={{margin:0,paddingBottom:0,border:0,fontSize:7.5}}>{PANEL_HDRS[tab]}</span>
                 {tab==="catalog"&&selCat&&<button className="btn sm" style={{fontSize:7.5}} onClick={()=>setSelCat(null)}>← {t.closeBtn}</button>}
@@ -1401,7 +1408,7 @@ function ArchiveGame(){
           )}
 
           {/* Clues panel (top-right) */}
-          <div className="pnl" style={{position:"absolute",top:6,right:6,width:"calc(44% - 12px)",bottom:190,zIndex:5,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+          <div className="pnl" style={{position:"absolute",top:6,right:6,width:"calc(44% - 12px)",bottom:CLU_BOT,zIndex:5,display:"flex",flexDirection:"column",overflow:"hidden"}}>
             <div style={{padding:".34rem .52rem",borderBottom:`1px solid #231b0d`,flexShrink:0,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <span className="ph" style={{margin:0,paddingBottom:0,border:0,fontSize:7.5}}>{t.cluesTitle}</span>
               <span style={{fontSize:7,color:allSolved?C.amber:C.dim,fontFamily:"'Courier New',monospace"}}>{clueCount}/6</span>
@@ -1430,7 +1437,7 @@ function ArchiveGame(){
         )}
         {/* BOTTOM STRIP */}
           {/* Card 1: Investigator — 本格古紙 */}
-          <div style={{position:"absolute",bottom:4,left:4,width:"27%",height:165,zIndex:5,
+          <div style={{position:"absolute",bottom:4,left:4,width:"27%",height:CARD_H,zIndex:5,
             background:"linear-gradient(148deg,#4a3818 0%,#5a4422 30%,#423210 55%,#503c1c 80%,#462e10 100%)",
             border:"1.5px solid #7a5e28",
             boxShadow:"inset 0 0 28px rgba(10,5,1,.7),inset 0 0 6px rgba(5,2,0,.5),3px 4px 16px rgba(0,0,0,.8)",
@@ -1461,7 +1468,7 @@ function ArchiveGame(){
           </div>
 
           {/* Card 2: Librarian Note — 暗い羊皮紙 + 手書き強調 */}
-          <div style={{position:"absolute",bottom:4,left:"calc(27% + 8px)",width:"29%",height:165,zIndex:5,
+          <div style={{position:"absolute",bottom:4,left:"calc(27% + 8px)",width:"29%",height:CARD_H,zIndex:5,
             background:"linear-gradient(148deg,#3e3218 0%,#4e3e18 28%,#383010 52%,#463a14 76%,#3a2e10 100%)",
             border:"1.5px solid #6a5422",
             boxShadow:"inset 0 0 32px rgba(8,4,0,.75),inset 0 0 8px rgba(4,2,0,.5),3px 4px 16px rgba(0,0,0,.82)",
@@ -1489,7 +1496,7 @@ function ArchiveGame(){
           </div>
 
           {/* Card 3: Decipher Panel */}
-          <div className="pnl" style={{position:"absolute",bottom:4,right:4,width:"calc(35% - 12px)",height:150,zIndex:5,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+          <div className="pnl" style={{position:"absolute",bottom:4,right:4,width:"calc(35% - 12px)",height:DEC_H,zIndex:5,display:"flex",flexDirection:"column",overflow:"hidden"}}>
             <div style={{padding:".34rem .48rem",borderBottom:`1px solid #231b0d`,flexShrink:0}}>
               <span className="ph" style={{margin:0,paddingBottom:0,border:0,fontSize:7.5}}>{t.decTitle}</span>
             </div>
@@ -1510,7 +1517,7 @@ function ArchiveGame(){
         </div>
 
         {/* ── RIGHT SIDEBAR ── */}
-        <div style={{width:160,background:C.sidebar,borderLeft:`1px solid ${C.border}`,flexShrink:0,display:"flex",flexDirection:"column",zIndex:6,overflow:"hidden"}}>
+        <div style={{width:SB_R,background:C.sidebar,borderLeft:`1px solid ${C.border}`,flexShrink:0,display:"flex",flexDirection:"column",zIndex:6,overflow:"hidden"}}>
 
           {/* お知らせ — 画面1/3 */}
           <div style={{borderBottom:`1px solid #231b0d`,flexShrink:0}}>
@@ -1569,7 +1576,7 @@ function ArchiveGame(){
       </div>
 
       {/* ── BOTTOM NAV (matching Image 4) ── */}
-      <div style={{background:C.footer,borderTop:`1px solid ${C.border}`,height:46,display:"flex",alignItems:"stretch",flexShrink:0,zIndex:10}}>
+      <div style={{background:C.footer,borderTop:`1px solid ${C.border}`,height:mobile?38:46,display:"flex",alignItems:"stretch",flexShrink:0,zIndex:10}}>
         {t.nav.map(item=>(
           <div key={item.id}
             className={`bnv${bnav===item.id?" on":""}${item.center?" center":""}` }
@@ -1609,27 +1616,6 @@ try {
   document.body.innerHTML = '<div style="position:fixed;inset:0;background:#0a0000;color:#ff6666;font-family:monospace;font-size:13px;padding:20px;white-space:pre-wrap;overflow:auto">MOUNT ERROR:\n'+e.message+'\n\n'+e.stack+'</div>';
 }
 
-</script>
-
-<script>
-// PWA: Service Worker 登録
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js', {scope: './'})
-      .then(r => console.log('SW registered:', r.scope))
-      .catch(e => console.log('SW error:', e));
-  });
-}
-// 横向きロック
-function lockLandscape() {
-  if (screen.orientation && screen.orientation.lock) {
-    screen.orientation.lock('landscape').catch(() => {});
-  }
-}
-window.addEventListener('load', lockLandscape);
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) lockLandscape();
-});
 </script>
 </body>
 </html>
