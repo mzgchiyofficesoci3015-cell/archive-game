@@ -745,23 +745,23 @@ function ArchiveGame(){
 
   /* ── ENDING ── */
   if(scr==="ending")return(
-    <div style={{background:C.bg,height:"100%",display:"flex",flexDirection:"column",padding:"1.8rem",position:"relative",overflow:"hidden"}}>
+    <div style={{background:C.bg,height:"100%",display:"flex",flexDirection:"column",padding:mobile?"1rem":"1.8rem",position:"relative",overflow:"hidden"}}>
       <style>{CSS}</style>
       <div style={{position:"absolute",inset:0,backgroundImage:`url(${BG_FORB})`,backgroundSize:"cover",backgroundPosition:"center center",opacity:.7}}/>
       <div style={{position:"absolute",inset:0,background:"rgba(6,4,2,.85)"}}/>
       <div style={{position:"relative",zIndex:2,display:"flex",flexDirection:"column",height:"100%"}}>
-        <div style={{fontSize:7.5,letterSpacing:2.5,color:C.goldDim,marginBottom:"1.3rem",fontFamily:"'Courier New',monospace",textTransform:"uppercase"}}>{t.endHdr}</div>
-        <div style={{flex:1,lineHeight:2.2,fontSize:10.5,fontFamily:"'Courier New',monospace"}} className="sc">
-          {endLines.map((l,i)=><div key={i} style={{animation:"fadeUp .3s ease both",color:l.includes("おかえり")||l.includes("Welcome")?C.amber:l.includes("【新規")||l.includes("[New")?C.amber:l.includes("削除済み")||l.includes("DELETED")?C.red:l.includes("完全削除")||l.includes("DELETION")?C.red:l===""?undefined:C.muted}}>{l||"\u00a0"}</div>)}
+        <div style={{fontSize:7.5,letterSpacing:2.5,color:C.goldDim,marginBottom:mobile?".6rem":"1.3rem",fontFamily:"'Courier New',monospace",textTransform:"uppercase"}}>{t.endHdr}</div>
+        <div style={{flex:1,lineHeight:mobile?1.9:2.2,fontSize:mobile?9.5:10.5,fontFamily:"'Courier New',monospace"}} className="sc">
+          {endLines.map((l,i)=><div key={i} style={{animation:"fadeUp .3s ease both",color:l.includes("おかえり")||l.includes("Welcome")?C.amber:l.includes("【新規")||l.includes("[New")?C.amber:l.includes("削除済み")||l.includes("DELETED")?C.red:l.includes("完全削除")||l.includes("DELETION")?C.red:l===""?undefined:C.muted}}>{l||" "}</div>)}
         </div>
         {endDone&&(
-          <div style={{animation:"fadeUp .55s ease both"}}>
-            <img src={IMG_LIB} alt="" style={{position:"absolute",right:0,bottom:38,width:"30%",maxHeight:"70%",objectFit:"cover",objectPosition:"top",opacity:.82,filter:"brightness(1.0) contrast(1.1) drop-shadow(-2px 0 14px rgba(200,160,60,.2))",animation:"slideR .5s ease both",pointerEvents:"none",zIndex:1}}/>
-            <div style={{borderTop:`1px solid ${C.border}`,paddingTop:".9rem",marginBottom:".9rem",position:"relative",zIndex:2}}>
-              <div style={{fontSize:12,color:C.muted,fontStyle:"italic",lineHeight:2,whiteSpace:"pre-line",maxWidth:"65%"}}>{t.libFinalD}</div>
-              <div style={{marginTop:".6rem",fontSize:14,color:C.gold,fontStyle:"italic"}}>{t.libFinalL}</div>
+          <div style={{animation:"fadeUp .55s ease both",position:"relative"}}>
+            <img src={IMG_LIB} alt="" style={{position:"absolute",right:mobile?-12:0,bottom:mobile?"100%":38,width:mobile?"44%":"30%",maxHeight:mobile?"160px":"70%",objectFit:"contain",objectPosition:"bottom center",opacity:.88,filter:"brightness(1.0) contrast(1.1) drop-shadow(-2px 0 14px rgba(200,160,60,.2))",animation:"slideR .5s ease both",pointerEvents:"none",zIndex:1}}/>
+            <div style={{borderTop:`1px solid ${C.border}`,paddingTop:mobile?".5rem":".9rem",marginBottom:mobile?".5rem":".9rem",position:"relative",zIndex:2}}>
+              <div style={{fontSize:mobile?9.5:12,color:C.muted,fontStyle:"italic",lineHeight:mobile?1.75:2,whiteSpace:"pre-line",maxWidth:mobile?"58%":"65%"}}>{t.libFinalD}</div>
+              <div style={{marginTop:mobile?".3rem":".6rem",fontSize:mobile?11:14,color:C.gold,fontStyle:"italic"}}>{t.libFinalL}</div>
             </div>
-            <button className="btn" onClick={()=>go("choice")} style={{position:"relative",zIndex:2}}>{t.fadeBtn}</button>
+            <button className="btn" onClick={()=>go("choice")} style={{position:"relative",zIndex:2,fontSize:mobile?9:undefined}}>{t.fadeBtn}</button>
           </div>
         )}
       </div>
