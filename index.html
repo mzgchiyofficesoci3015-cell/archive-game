@@ -495,6 +495,40 @@ function ArchiveGame(){
   const[ugndErr,setUgndErr]=useState(false);
   const[forbEntry,setForbEntry]=useState(false);
   const[hintPanel,setHintPanel]=useState(false);
+  // ── ヒント 1日3回制限 ──
+  const HINT_MAX=3;
+  const _loadHintData=()=>{
+    try{
+      const today=new Date().toISOString().slice(0,10);
+      const raw=localStorage.getItem('arc_hint');
+      if(raw){const d=JSON.parse(raw);if(d.date===today)return d;}
+      return{date:today,count:0,revealed:[]};
+    }catch(e){return{date:'',count:0,revealed:[]};}
+  };
+  const[hintCount,setHintCount]=useState(()=>_loadHintData().count);
+  const[hintRevealed,setHintRevealed]=useState(()=>_loadHintData().revealed);
+  const _saveHintData=(count,revealed)=>{
+    try{
+      const today=new Date().toISOString().slice(0,10);
+      localStorage.setItem('arc_hint',JSON.stringify({date:today,count,revealed}));
+    }catch(e){}
+  };
+  const useHint=(key)=>{
+    if(hintRevealed.includes(key))return; // 既に開示済み→無料
+    if(hintCount>=HINT_MAX)return;         // 上限
+    sfx.play('click');
+    const newCount=hintCount+1;
+    const newRevealed=[...hintRevealed,key];
+    setHintCount(newCount);
+    setHintRevealed(newRevealed);
+    _saveHintData(newCount,newRevealed);
+  };
+  // マウント時に日付チェック→リセット
+  useEffect(()=>{
+    const d=_loadHintData();
+    setHintCount(d.count);
+    setHintRevealed(d.revealed);
+  },[]);
   const[saved,setSaved]=useState(false);
   const[showFile,setShowFile]=useState(false);
   const[mobPanel,setMobPanel]=useState(null); // null|'main'|'clues'
@@ -597,35 +631,98 @@ function ArchiveGame(){
   const onHallFind=()=>{if(hallFind||solved.c4)return;sfx.play('clue');setHallFind(true);setSolved(p=>({...p,c4:true}));addClue(lang==="ja"?"廊下の書架：本の背表紙に刻まれた数列「π=3141」を発見。":"Hallway shelf: numeric sequence found on book spines — 'π=3141'.");setLibIdx(p=>Math.min(p+1,5));};
   const onUgndCheck=()=>{const v=ugndInput.trim();if(v==="1887"||v==="MNEME"){setUgndOk(true);setSolved(p=>({...p,c5:true}));addClue(lang==="ja"?"地下書庫：封印された記録『時間の地図学』1887年。記録者の名は——消えている。":"Underground: sealed record 'Cartography of Time' 1887 — the recorder's name is erased.");sfx.play('unlock');}else{setUgndErr(true);sfx.play('error');setTimeout(()=>setUgndErr(false),1400);}};
 
-  const HintPanel=()=>(
+  const HintPanel=()=>{
+    const remaining=HINT_MAX-hintCount;
+    const hintItems=[
+      {k:"c0",done:solved.c0,hint:t.hint1,label:lang==="ja"?"蔵書検索":"Catalog"},
+      {k:"c1",done:solved.c1,hint:t.hint2,label:lang==="ja"?"閲覧記録":"Records"},
+      {k:"c2",done:solved.c2,hint:t.hint3,label:lang==="ja"?"手書きメモ":"Notes"},
+      {k:"c3",done:solved.c3,hint:t.hint4,label:lang==="ja"?"暗号解読":"Decipher"},
+      {k:"c4",done:solved.c4,hint:lang==="ja"?"閉館後通路へ移動し、書架を調べよ":"Move to the hallway and examine the shelves",label:lang==="ja"?"廊下":"Hallway"},
+      {k:"c5",done:solved.c5,hint:lang==="ja"?"地下書庫の錠前の年号は1887年":"The underground lock year is 1887",label:lang==="ja"?"地下書庫":"Underground"},
+    ];
+    return(
     <div style={{position:"fixed",inset:0,background:"rgba(3,2,1,.96)",zIndex:64,display:"flex",flexDirection:"column",padding:"1.2rem 1.4rem",animation:"fadeIn .2s ease both"}}>
       <style>{CSS}</style>
-      <div style={{display:"flex",alignItems:"center",gap:".7rem",marginBottom:".8rem",borderBottom:`1px solid ${C.border}`,paddingBottom:".5rem"}}>
-        <button className="btn sm" onClick={()=>{sfx.play('click');setHintPanel(false);}}>← 戻る</button>
+      {/* ヘッダー */}
+      <div style={{display:"flex",alignItems:"center",gap:".7rem",marginBottom:".7rem",borderBottom:`1px solid ${C.border}`,paddingBottom:".5rem",flexShrink:0}}>
+        <button className="btn sm" onClick={()=>{sfx.play('click');setHintPanel(false);}}>← {lang==="ja"?"戻る":"Back"}</button>
         <span style={{fontSize:7.5,letterSpacing:3,color:C.goldDim,fontFamily:"'Courier New',monospace"}}>HINT SYSTEM</span>
       </div>
-      <div className="sc" style={{flex:1,overflow:"auto"}}>
-        <div style={{fontSize:8,color:C.dim,letterSpacing:1.5,fontFamily:"'Courier New',monospace",marginBottom:".8rem"}}>{lang==="ja"?"現在の手がかり状況":"CURRENT PROGRESS"}</div>
-        {[
-          {k:"c0",done:solved.c0,hint:t.hint1,label:lang==="ja"?"蔵書検索":"Catalog"},
-          {k:"c1",done:solved.c1,hint:t.hint2,label:lang==="ja"?"閲覧記録":"Records"},
-          {k:"c2",done:solved.c2,hint:t.hint3,label:lang==="ja"?"手書きメモ":"Notes"},
-          {k:"c3",done:solved.c3,hint:t.hint4,label:lang==="ja"?"暗号解読":"Decipher"},
-          {k:"c4",done:solved.c4,hint:lang==="ja"?"閉館後通路へ移動し、書架を調べよ":"Move to the hallway and examine the shelves",label:lang==="ja"?"廊下":"Hallway"},
-          {k:"c5",done:solved.c5,hint:lang==="ja"?"地下書庫の錠前の年号は1887年":"The underground lock year is 1887",label:lang==="ja"?"地下書庫":"Underground"},
-        ].map(({k,done,hint,label})=>(
-          <div key={k} style={{marginBottom:".6rem",padding:".6rem .8rem",border:`1px solid ${done?C.borderBr:C.border}`,background:done?"rgba(60,50,10,.15)":"rgba(10,8,4,.5)"}}>
-            <div style={{display:"flex",alignItems:"center",gap:".5rem",marginBottom:done?0:".3rem"}}>
-              <span style={{color:done?C.greenT:C.faint,fontSize:10}}>{done?"◆":"◇"}</span>
-              <span style={{fontSize:9,color:done?C.goldDim:C.muted,fontFamily:"'Courier New',monospace",letterSpacing:.5}}>{label}</span>
-              {done&&<span style={{fontSize:7,color:C.greenT,letterSpacing:1,marginLeft:"auto"}}>SOLVED</span>}
-            </div>
-            {!done&&<div style={{fontSize:9,color:C.dim,fontStyle:"italic",fontFamily:"Georgia,serif",lineHeight:1.8,paddingLeft:"1.2rem"}}>{hint}</div>}
+      {/* 残り回数バー */}
+      <div style={{marginBottom:".8rem",padding:".55rem .8rem",border:`1px solid ${remaining>0?C.borderBr:"#5a2020"}`,background:remaining>0?"rgba(60,45,5,.25)":"rgba(40,5,5,.35)",flexShrink:0}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:".3rem"}}>
+          <span style={{fontSize:8,letterSpacing:2,color:C.goldDim,fontFamily:"'Courier New',monospace"}}>
+            {lang==="ja"?"本日の閲覧券":"TODAY'S HINTS"}
+          </span>
+          <span style={{fontSize:11,fontFamily:"'Courier New',monospace",color:remaining>0?C.gold:"#cc4040",fontWeight:"bold"}}>
+            {remaining}<span style={{fontSize:7,color:C.dim,marginLeft:3}}>/ {HINT_MAX}</span>
+          </span>
+        </div>
+        {/* ゲージ */}
+        <div style={{height:3,background:"rgba(60,45,10,.4)",borderRadius:2,overflow:"hidden"}}>
+          <div style={{height:"100%",width:`${(remaining/HINT_MAX)*100}%`,background:remaining>1?C.gold:remaining===1?"#cc8020":"#cc2020",transition:"width .3s ease",borderRadius:2}}/>
+        </div>
+        {remaining===0&&(
+          <div style={{marginTop:".35rem",fontSize:8,color:"#cc6040",fontFamily:"'Courier New',monospace",letterSpacing:.5}}>
+            {lang==="ja"?"── 本日の閲覧券を使い切りました。翌日にリセットされます ──":"── All hints used. Resets tomorrow ──"}
           </div>
-        ))}
+        )}
+        {remaining>0&&(
+          <div style={{marginTop:".28rem",fontSize:7.5,color:C.dim,fontFamily:"'Courier New',monospace"}}>
+            {lang==="ja"?"解決済みの項目は無料で確認できます":"Solved items are always free to check"}
+          </div>
+        )}
+      </div>
+      {/* ヒントリスト */}
+      <div className="sc" style={{flex:1,overflow:"auto"}}>
+        {hintItems.map(({k,done,hint,label})=>{
+          const isRevealed=hintRevealed.includes(k);
+          const canReveal=!done&&!isRevealed&&remaining>0;
+          const locked=!done&&!isRevealed&&remaining<=0;
+          return(
+          <div key={k} style={{marginBottom:".6rem",padding:".6rem .8rem",border:`1px solid ${done?C.borderBr:isRevealed?"#4a6030":locked?"#3a1010":C.border}`,background:done?"rgba(60,50,10,.15)":isRevealed?"rgba(30,50,10,.18)":locked?"rgba(30,5,5,.25)":"rgba(10,8,4,.5)"}}>
+            <div style={{display:"flex",alignItems:"center",gap:".5rem"}}>
+              <span style={{fontSize:10,color:done?C.greenT:isRevealed?"#80b040":locked?"#602020":C.faint}}>
+                {done?"◆":isRevealed?"◈":locked?"🔒":"◇"}
+              </span>
+              <span style={{fontSize:9,color:done?C.goldDim:isRevealed?C.muted:C.dim,fontFamily:"'Courier New',monospace",letterSpacing:.5,flex:1}}>{label}</span>
+              {done&&<span style={{fontSize:7,color:C.greenT,letterSpacing:1}}>SOLVED</span>}
+              {canReveal&&(
+                <button className="btn sm" style={{fontSize:7.5,padding:".14rem .38rem",color:C.gold,borderColor:C.goldDim}}
+                  onClick={()=>useHint(k)}>
+                  {lang==="ja"?"閲覧":"View"}
+                </button>
+              )}
+              {locked&&(
+                <span style={{fontSize:7,color:"#804040",fontFamily:"'Courier New',monospace",letterSpacing:.5}}>
+                  {lang==="ja"?"本日終了":"LOCKED"}
+                </span>
+              )}
+            </div>
+            {/* 解決済み or 開示済み → ヒント表示 */}
+            {(done||isRevealed)&&(
+              <div style={{marginTop:".3rem",fontSize:9,color:done?C.dim:C.muted,fontStyle:"italic",fontFamily:"Georgia,serif",lineHeight:1.8,paddingLeft:"1.4rem"}}>
+                {done?(lang==="ja"?"✓ 解決済み":"✓ Solved"):hint}
+              </div>
+            )}
+            {/* 未開示・残りあり → 伏せ表示 */}
+            {!done&&!isRevealed&&!locked&&(
+              <div style={{marginTop:".3rem",paddingLeft:"1.4rem",fontSize:8.5,color:"#3a3020",fontStyle:"italic",fontFamily:"Georgia,serif"}}>
+                {lang==="ja"?"── 閲覧券を使用するとヒントが表示されます ──":"── Use a hint to reveal ──"}
+              </div>
+            )}
+            {/* ロック中 */}
+            {locked&&(
+              <div style={{marginTop:".3rem",paddingLeft:"1.4rem",fontSize:8.5,color:"#5a2020",fontFamily:"'Courier New',monospace",letterSpacing:.5}}>
+                {lang==="ja"?"── 明日また閲覧できます ──":"── Available again tomorrow ──"}
+              </div>
+            )}
+          </div>
+        );})}
       </div>
     </div>
-  );
+  );};
 
   const FilePanel=()=>(
     <div style={{position:"fixed",inset:0,background:"rgba(3,2,1,.96)",zIndex:64,display:"flex",flexDirection:"column",padding:"1rem 1.2rem",animation:"fadeIn .22s ease both"}}>
