@@ -490,6 +490,7 @@ function ArchiveGame(){
   const[sceneTyping,setSceneTyping]=useState(false);
   const[libChoices,setLibChoices]=useState(false);
   const[hallFind,setHallFind]=useState(false);
+  const[demoPhase,setDemoPhase]=useState(0);
   const[ugndInput,setUgndInput]=useState("");
   const[ugndOk,setUgndOk]=useState(false);
   const[ugndErr,setUgndErr]=useState(false);
@@ -895,7 +896,10 @@ function ArchiveGame(){
         <div style={{fontSize:12,color:"rgba(160,120,40,.18)",lineHeight:2.5,fontStyle:"italic",maxWidth:330,whiteSpace:"pre-line",fontFamily:"Georgia,serif"}}>{t.yesM2}</div>
         <div style={{marginTop:"3.5rem",fontSize:7.5,color:"rgba(60,45,15,.2)",letterSpacing:3,fontFamily:"'Courier New',monospace"}}>{t.yesM3}</div>
         <div style={{marginTop:"2rem",fontSize:6.5,color:"rgba(100,75,20,.15)",letterSpacing:2,fontFamily:"'Courier New',monospace"}}>{lang==="ja"?"閲覧者番号 027 — 記録は完成した。":"VISITOR 027 — THE RECORD IS COMPLETE."}</div>
-        <div style={{marginTop:"2.8rem"}}><button className="btn" style={{opacity:.35,fontSize:9,color:C.dim,borderColor:"rgba(80,60,20,.3)"}} onClick={()=>{sfx.play('click');resetGame();}}>{t.again}</button></div>
+        <div style={{marginTop:"2.8rem",display:"flex",flexDirection:"column",alignItems:"center",gap:"1rem"}}>
+          <button className="btn" style={{fontSize:mobile?9:11,letterSpacing:1,color:C.gold}} onClick={()=>{sfx.play('click');setDemoPhase(0);setScr("demo_end");}}>── {lang==="ja"?"数日後":"A few days later"} ──　{lang==="ja"?"第1章へ":"Chapter 1 →"}</button>
+          <button className="btn" style={{opacity:.35,fontSize:9,color:C.dim,borderColor:"rgba(80,60,20,.3)"}} onClick={()=>{sfx.play('click');resetGame();}}>{t.again}</button>
+        </div>
       </div>
     </div>
   );
@@ -913,10 +917,118 @@ function ArchiveGame(){
         <div style={{fontSize:12.5,color:C.muted,lineHeight:2.2,fontStyle:"italic",maxWidth:360,whiteSpace:"pre-line",fontFamily:"Georgia,serif"}}>{t.noM2}</div>
         <div style={{marginTop:"1.8rem",fontSize:8,color:C.dim,letterSpacing:3,fontFamily:"'Courier New',monospace"}}>{t.noM3}</div>
         <div style={{marginTop:".7rem",fontSize:8,color:C.faint,letterSpacing:2,fontFamily:"'Courier New',monospace",fontStyle:"italic"}}>{lang==="ja"?"「でも、記録は残る。」":`"But the record remains."`}</div>
-        <div style={{marginTop:"1.3rem"}}><button className="btn" onClick={()=>{sfx.play('click');resetGame();}}>{t.again}</button></div>
+        <div style={{marginTop:"1.3rem",display:"flex",flexDirection:"column",alignItems:"center",gap:".9rem"}}>
+          <button className="btn" style={{fontSize:mobile?9:11,letterSpacing:1,color:C.gold}} onClick={()=>{sfx.play('click');setDemoPhase(0);setScr("demo_end");}}>── {lang==="ja"?"数日後":"A few days later"} ──　{lang==="ja"?"第1章へ":"Chapter 1 →"}</button>
+          <button className="btn" onClick={()=>{sfx.play('click');resetGame();}}>{t.again}</button>
+        </div>
       </div>
     </div>
   );
+
+  /* ── DEMO END SCREEN ── */
+  if(scr==="demo_end"){
+    React.useEffect(()=>{
+      if(scr!=="demo_end")return;
+      setDemoPhase(0);
+      const t1=setTimeout(()=>setDemoPhase(1),1800);
+      const t2=setTimeout(()=>setDemoPhase(2),2900);
+      return()=>{clearTimeout(t1);clearTimeout(t2);};
+    },[scr]);
+    return(
+      <div style={{background:"#000",height:"100%",position:"relative",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
+        <style>{CSS}</style>
+        <style>{`
+          @keyframes demoLoad{0%{width:0}100%{width:100%}}
+          @keyframes demoGlitch{
+            0%{transform:translate(0);filter:none;opacity:1}
+            8%{transform:translate(-4px,2px);filter:hue-rotate(90deg) brightness(1.4);clip-path:inset(20% 0 30% 0)}
+            16%{transform:translate(4px,-3px);filter:hue-rotate(-90deg) brightness(.6);clip-path:inset(60% 0 5% 0)}
+            24%{transform:translate(-2px,4px);filter:none;clip-path:inset(0)}
+            32%{transform:translate(6px,-1px);filter:brightness(1.8) saturate(0);clip-path:inset(40% 0 20% 0)}
+            40%{transform:translate(0);filter:none;clip-path:inset(0)}
+            50%{transform:translate(-5px,0);filter:hue-rotate(180deg);clip-path:inset(10% 0 70% 0)}
+            60%{transform:translate(3px,3px);filter:brightness(2) saturate(0)}
+            70%{transform:translate(0,-5px);filter:invert(1);clip-path:inset(0)}
+            80%{transform:translate(-3px,0);filter:none}
+            90%{transform:translate(0);opacity:.3}
+            100%{transform:translate(0);filter:none;opacity:1}
+          }
+          @keyframes staticScan{0%{background-position:0 0}100%{background-position:0 100px}}
+          @keyframes demoReveal{0%{opacity:0;letter-spacing:8px}60%{opacity:.9;letter-spacing:3.5px}100%{opacity:1;letter-spacing:3px}}
+          @keyframes demoSub{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+          @keyframes demoBlink{0%,100%{opacity:.2}50%{opacity:.85}}
+        `}</style>
+
+        {/* ノイズオーバーレイ */}
+        <div style={{
+          position:"absolute",inset:0,
+          backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+          opacity:demoPhase===1?.25:.05,transition:"opacity .1s",pointerEvents:"none",zIndex:1,
+          animation:demoPhase===1?"staticScan .08s linear infinite":"none",
+        }}/>
+        {/* スキャンライン */}
+        <div style={{
+          position:"absolute",inset:0,
+          background:"repeating-linear-gradient(0deg,rgba(0,0,0,.08) 0px,rgba(0,0,0,.08) 1px,transparent 1px,transparent 3px)",
+          pointerEvents:"none",zIndex:2,opacity:demoPhase>=1?.7:.2,transition:"opacity .3s",
+        }}/>
+
+        {/* メインコンテンツ */}
+        <div style={{
+          position:"relative",zIndex:3,textAlign:"center",maxWidth:420,width:"90%",
+          animation:demoPhase===1?"demoGlitch .9s steps(1) both":"none",
+        }}>
+          {/* フェーズ0：ロード中 */}
+          {demoPhase===0&&(
+            <div style={{animation:"fadeIn .4s ease both"}}>
+              <div style={{fontSize:7,letterSpacing:3,color:"rgba(180,140,50,.65)",fontFamily:"'Courier New',monospace",marginBottom:"1.4rem"}}>
+                {lang==="ja"?"── 記録を開こうとしている ──":"── Attempting to access the record ──"}
+              </div>
+              <div style={{background:"rgba(20,15,5,.8)",border:"1px solid rgba(90,70,25,.4)",height:4,width:"80%",margin:"0 auto",overflow:"hidden",borderRadius:1}}>
+                <div style={{height:"100%",background:"linear-gradient(90deg,#5a3a10,#c9a040,#5a3a10)",animation:"demoLoad 1.6s linear both",borderRadius:1}}/>
+              </div>
+              <div style={{marginTop:".8rem",fontSize:7,color:"rgba(100,80,30,.45)",fontFamily:"'Courier New',monospace",animation:"demoBlink 1s infinite"}}>
+                {lang==="ja"?"読み込み中…":"Loading…"}
+              </div>
+            </div>
+          )}
+
+          {/* フェーズ1：グリッチ */}
+          {demoPhase===1&&(
+            <div style={{fontSize:16,color:"#fff",fontFamily:"'Courier New',monospace",letterSpacing:2,opacity:.8}}>
+              ▓▒░ ERROR ░▒▓
+            </div>
+          )}
+
+          {/* フェーズ2：表示 */}
+          {demoPhase===2&&(
+            <div>
+              <div style={{
+                fontSize:mobile?9:11,letterSpacing:3,color:"rgba(200,160,60,.95)",
+                fontFamily:"'Courier New',monospace",marginBottom:"1.8rem",
+                animation:"demoReveal 1.2s cubic-bezier(.16,1,.3,1) both",
+              }}>── {lang==="ja"?"体験版はここで終わりです":"This is the end of the demo"} ──</div>
+
+              <div style={{
+                fontSize:mobile?10:12,color:"rgba(170,138,65,.72)",fontFamily:"Georgia,serif",
+                fontStyle:"italic",lineHeight:2.1,marginBottom:"2.2rem",whiteSpace:"pre-line",
+                animation:"demoSub 1s ease both",animationDelay:".6s",opacity:0,
+              }}>
+                {lang==="ja"?"「記録の続きは——\nまだ、開けない。」":"\"The rest of the record —\ncannot yet be opened.\""}
+              </div>
+
+              <div style={{animation:"demoSub 1s ease both",animationDelay:"1.2s",opacity:0}}>
+                <button className="btn" style={{fontSize:9,color:C.dim,borderColor:"rgba(80,60,20,.38)"}}
+                  onClick={()=>{sfx.play('click');resetGame();}}>
+                  {lang==="ja"?"── 最初から ──":"── From the Beginning ──"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   /* ══════════════════════════════════
      MAIN GAME SCREEN
